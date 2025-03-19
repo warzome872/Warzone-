@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+        }
+        input, button {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+
+        /* Loader Centered */
+        .loader-container, #qrcode {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .loader {
+            width: 100px; /* Bigger Size */
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: repeating-conic-gradient(#0000, #000 1deg 18deg, #0000 20deg 36deg);
+            animation: l9 1s infinite linear;
+            position: relative;
+        }
+        .loader::before {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            inset: 0;
+            background: inherit;
+            animation: inherit;
+        }
+        @keyframes l9 {
+            100% {transform: rotate(.5turn)}
+        }
+
+        /* Bottom Centered Popup */
+        .popup {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .popup p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        .popup button {
+            margin-top: 10px;
+            background: red;
+            padding: 5px 10px;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .popup button:hover {
+            background: darkred;
+        }
+
+        /* Popup Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+    <div class="container" id="mainContainer">
+        <h2>QR Code Generator</h2>
+        <input type="text" id="linkInput" placeholder="Enter your link here">
+        <button onclick="generateQR()">Generate QR Code</button>
+    </div>
+
+    <!-- Loader Centered -->
+    <div class="loader-container" id="loaderContainer">
+        <div class="loader"></div>
+    </div>
+
+    <!-- QR Code Centered -->
+    <div id="qrcode"></div>
+
+    <!-- Bottom Centered Popup -->
+    <div id="popup" class="popup">
+        <p>Thank you for visiting my page!</p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+
+    <script>
+        function generateQR() {
+            let link = document.getElementById("linkInput").value;
+            let qrDiv = document.getElementById("qrcode");
+            let loaderContainer = document.getElementById("loaderContainer");
+            let mainContainer = document.getElementById("mainContainer");
+
+            // Hide input and button
+            mainContainer.style.display = "none";
+
+            // Show Loader Animation in Center
+            loaderContainer.style.display = "block";
+
+            if (link.trim() !== "") {
+                setTimeout(() => {
+                    // Hide loader and show QR code in center
+                    loaderContainer.style.display = "none";
+                    qrDiv.innerHTML = "";
+                    qrDiv.style.display = "block";
+                    qrDiv.style.position = "absolute";
+                    qrDiv.style.top = "50%";
+                    qrDiv.style.left = "50%";
+                    qrDiv.style.transform = "translate(-50%, -50%)";
+
+                    new QRCode(qrDiv, {
+                        text: link,
+                        width: 200,
+                        height: 200
+                    });
+
+                    // Show Popup
+                    document.getElementById("popup").style.display = "block";
+                }, 2000); // 2 sec delay for animation effect
+            } else {
+                alert("Please enter a valid link!");
+                mainContainer.style.display = "block";
+                loaderContainer.style.display = "none";
+            }
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
